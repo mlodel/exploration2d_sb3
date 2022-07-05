@@ -18,17 +18,17 @@ if __name__ == '__main__':
     # Configs
     ## General
     seed = 0
-    n_envs = 4
+    n_envs = 16
     total_steps = 2e7
     use_cuda = True
 
     alg_params = {
         "policy_kwargs": dict(net_arch=[256, dict(pi=[256], vf=[256])]),
-        "learning_rate": 1e-4,
+        "learning_rate": 1e-5,
         "gamma": 0.99,
-        "n_steps": 512,
-        "batch_size": 64,
-        "n_epochs": 4,
+        "n_steps": 128,
+        "batch_size": 128,
+        "n_epochs": 5,
         "clip_range": 0.2,
         "ent_coef": 0.01,
         "vf_coef": 0.5,
@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
     # Setups paths
     log_dir = os.getcwd() + "/logs"
+    os.mkdir(log_dir)
     save_path = os.path.join(log_dir, "log_{}".format(get_latest_run_id(log_dir) + 1))
     cleanup_log_dir(save_path)
 
