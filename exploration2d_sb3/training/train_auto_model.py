@@ -6,14 +6,14 @@ import gym_collision_avoidance
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.env_checker import check_env
-from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
 
 from stable_baselines3 import PPO
 
 from exploration2d_sb3.utils.log_dir import get_latest_run_id, cleanup_log_dir
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Configs
     ## General
@@ -36,8 +36,20 @@ if __name__ == '__main__':
     }
 
     # Generate Environment
-    envs = make_vec_env("CollisionAvoidance-v0", n_envs=n_envs, seed=seed, vec_env_cls=SubprocVecEnv)
-
+    envs = make_vec_env(
+        "CollisionAvoidance-v0", n_envs=n_envs, seed=seed, vec_env_cls=SubprocVecEnv
+    )
+    envs = VecNormalize(
+        envs,
+        norm_reward=False,
+        clip_obs=100,
+        norm_obs_keys=[
+            "heading_global_frame",
+            "angvel_global_frame",
+            "pos_global_frame",
+            "vel_global_frame",
+        ],
+    )
 
     # Setups paths
     log_dir = os.getcwd() + "/logs"
