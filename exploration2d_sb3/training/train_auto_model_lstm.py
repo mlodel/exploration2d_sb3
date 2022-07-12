@@ -7,8 +7,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
 
-from stable_baselines3 import PPO
-
+from sb3_contrib import RecurrentPPO
 import wandb
 from wandb.integration.sb3 import WandbCallback
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
         "use_cuda": True,
         "alg_params": {
             "policy_kwargs": dict(
-                net_arch=[256, dict(pi=[256], vf=[256])], normalize_images=False
+                net_arch=[dict(pi=[256], vf=[256])], normalize_images=False
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
@@ -83,18 +82,21 @@ if __name__ == "__main__":
 
     ## Save a checkpoint every n steps and log to WandB
     wandb_callback = WandbCallback(
-        model_save_freq=int(5e5),
-        model_save_path=save_path + "/checkpoints",
-        verbose=2,
+            model_save_freq=int(5e5),
+            model_save_path=save_path + "/checkpoints",
+            verbose=2,
     )
 
-    alg = PPO(
-        "MultiInputPolicy",
+    alg = RecurrentPPO(
+        "MultiInputLstmPolicy",
         envs,
         verbose=1,
         device=device,
         tensorboard_log=save_path,
-        **config["alg_params"]
+        **config["alg_params"],
     )
-    alg.learn(total_timesteps=int(config["total_steps"]), callback=wandb_callback)
+    alg.learn(
+        total_timesteps=int(config["total_steps"]),
+        callback=wandb_callback
+    )
     alg.save(save_path + "/model_final")
