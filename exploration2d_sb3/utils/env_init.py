@@ -5,15 +5,20 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
 
 
-def init_env(config, save_path):
+def init_env(config, save_path, norm_rewards=True, norm_obs=False):
     # Generate Environment
     envs = make_vec_env(
-        "CollisionAvoidance-v0", n_envs=config['n_envs'], seed=config["seed"], vec_env_cls=SubprocVecEnv
+        "CollisionAvoidance-v0",
+        n_envs=config["n_envs"],
+        seed=config["seed"],
+        vec_env_cls=SubprocVecEnv,
     )
     envs = VecNormalize(
         envs,
+        norm_reward=norm_rewards,
+        norm_obs=norm_obs,
         clip_obs=255,
-        gamma=config["alg_params"]["gamma"]
+        gamma=config["alg_params"]["gamma"],
     )
 
     # Save plot trajectories

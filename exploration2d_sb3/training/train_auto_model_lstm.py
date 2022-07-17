@@ -12,19 +12,28 @@ from exploration2d_sb3.utils.log_dir import get_save_path
 from exploration2d_sb3.utils.env_init import init_env
 from exploration2d_sb3.utils.arguments import get_args
 
+from exploration2d_sb3.models.extractor_imgs_states import ImgStateExtractor
+
 if __name__ == "__main__":
     args = get_args()
+
+    device = th.device(
+        "cuda:0" if th.cuda.is_available() else "cpu"
+    )
 
     # Configs
     config = {
         "seed": 0,
         "n_envs": 16,
         "total_steps": 2e7,
-        "use_cuda": True,
+        "norm_rewards": True,
+        "norm_obs": False,
         "alg_params": {
             "policy_kwargs": dict(
                 net_arch=[dict(pi=[256, 256], vf=[256, 256])],
                 normalize_images=False,
+                features_extractor_class=ImgStateExtractor,
+                features_extractor_kwargs=dict(device=device),
                 enable_critic_lstm=False,
                 shared_lstm=True,
             ),
@@ -65,11 +74,13 @@ if __name__ == "__main__":
     # Setup Training
     if not run.resumed:
         # Generate and Initialize Environment
-        envs = init_env(config, save_path)
-
-        device = th.device(
-            "cuda:0" if config["use_cuda"] and th.cuda.is_available() else "cpu"
+        envs = init_env(
+            config,
+            save_path,
+            norm_obs=config["norm_obs"],
+            norm_rewards=config["norm_rewards"],
         )
+
         model = RecurrentPPO(
             "MultiInputLstmPolicy",
             envs,
