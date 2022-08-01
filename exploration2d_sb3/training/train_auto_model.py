@@ -13,6 +13,7 @@ from exploration2d_sb3.utils.env_init import init_env
 from exploration2d_sb3.utils.arguments import get_args
 
 from exploration2d_sb3.models.extractor_imgs_states import ImgStateExtractor
+from exploration2d_sb3.models.extractor_stacked_imgs_states import StackedImgStateExtractor
 
 if __name__ == "__main__":
     args = get_args()
@@ -32,7 +33,7 @@ if __name__ == "__main__":
             "policy_kwargs": dict(
                 net_arch=[256, dict(pi=[256], vf=[256])],
                 normalize_images=False,
-                features_extractor_class=ImgStateExtractor,
+                features_extractor_class=StackedImgStateExtractor,
                 features_extractor_kwargs=dict(device=device),
             ),
             "learning_rate": 1e-5,
