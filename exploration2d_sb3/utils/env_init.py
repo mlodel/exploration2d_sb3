@@ -5,7 +5,7 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
 
 
-def init_env(config, save_path, norm_rewards=True, norm_obs=False):
+def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
     # Generate Environment
     envs = make_vec_env(
         "CollisionAvoidance-v0",
@@ -26,7 +26,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False):
         plot_save_dir = save_path + "/figures_train/figs_env" + str(i) + "/"
         envs.env_method("set_plot_save_dir", plot_save_dir, indices=i)
         envs.env_method("set_n_env", config["n_envs"], i, False, indices=i)
-        if i != 0:
+        if i != 0 and not eval:
             envs.env_method("set_plot_env", False, indices=i)
 
     # Environment Settings

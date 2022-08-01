@@ -34,8 +34,8 @@ if __name__ == "__main__":
                 normalize_images=False,
                 features_extractor_class=ImgStateExtractor,
                 features_extractor_kwargs=dict(device=device),
-                enable_critic_lstm=False,
-                shared_lstm=True,
+                enable_critic_lstm=True,
+                shared_lstm=False,
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
 
     run = wandb.init(
-        project="exploration_sb3_goals",
+        project="exploration_sb3",
         id=run_id,
         config=(config if not args.resume else None),
         sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics

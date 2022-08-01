@@ -51,7 +51,7 @@ if __name__ == "__main__":
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
 
     run = wandb.init(
-        project="exploration_sb3_goals",
+        project="exploration_sb3",
         id=run_id,
         config=(config if not args.resume else None),
         sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
