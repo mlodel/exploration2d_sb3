@@ -46,8 +46,8 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
 
         # TODO move settings to arguments
         # Image input settings
-        self.image_keys = ["local_grid", "ego_binary_map", "ego_explored_map"]
-        self.stacked_image_keys = [["ego_binary_map", "ego_explored_map"]]
+        self.image_keys = ["local_grid", "ego_binary_map", "ego_explored_map", "ego_goal_map"]
+        self.stacked_image_keys = [["ego_binary_map", "ego_explored_map", "ego_goal_map"]]
 
         # State input settings
         self.vector_keys = [
