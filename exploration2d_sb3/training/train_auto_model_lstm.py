@@ -1,7 +1,7 @@
 import torch as th
 import os
 import gym
-import gym_collision_avoidance
+import gym_navigation2d
 
 from sb3_contrib import RecurrentPPO
 import wandb
@@ -9,7 +9,7 @@ from wandb.integration.sb3 import WandbCallback
 import wandb.util
 
 from exploration2d_sb3.utils.log_dir import get_save_path
-from exploration2d_sb3.utils.env_init import init_env
+from exploration2d_sb3.utils.env_util_navigation2d import init_env
 from exploration2d_sb3.utils.arguments import get_args
 
 from exploration2d_sb3.models.extractor_imgs_states import ImgStateExtractor
