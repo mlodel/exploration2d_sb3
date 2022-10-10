@@ -49,17 +49,17 @@ if __name__ == "__main__":
             "vf_coef": 0.5,
             "target_kl": 0.01,
         },
-        "use_curriculum": False,
+        "use_curriculum": True,
         "curriculum": [
             {
                 "total_timesteps": 5e6,
-                "level": 0,
+                "level": 1,
             },
             {
                 "total_timesteps": 20e6,
-                "level": 1,
+                "level": 2,
             },
-        ]
+        ],
     }
 
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
@@ -127,7 +127,9 @@ if __name__ == "__main__":
     # Curriculum learning
     if config["use_curriculum"]:
         for level in config["curriculum"]:
+            print("Starting curriculum level {}".format(level["level"]))
             set_env_level(model.env, level["level"])
+            set_env_level(eval_callback.eval_env, level["level"])
             model.learn(
                 total_timesteps=level["total_timesteps"],
                 callback=[wandb_callback, eval_callback],

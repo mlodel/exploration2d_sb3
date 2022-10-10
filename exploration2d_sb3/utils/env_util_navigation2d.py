@@ -48,5 +48,6 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
 
     return envs, eval_env
 
+
 def set_env_level(env, level):
     env.env_method("set_level", level)
