@@ -20,6 +20,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         seed=config["seed"],
         vec_env_cls=SubprocVecEnv if config["n_envs"] > 1 else DummyVecEnv,
     )
+    # Normalize Environment
     gamma = config["alg_params"]["gamma"] if not eval else 1
     envs = VecNormalize(
         envs,
@@ -28,7 +29,12 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         clip_obs=255,
         gamma=gamma,
     )
-    envs.env_method("set_use_expert_action", 1, False, "", False, 0.0, False)
+    # Set Policy settings
+    envs.env_method("set_use_expert_action", 1, False, "", False, 0.0, False, False)
+
+    # Set env ids for seeding
+    for i in range(config["n_envs"]):
+        envs.env_method("set_n_env", config["n_envs"], i, True, indices=i)
 
     eval_env = make_vec_env(
         "Navigation2D-v0",
@@ -36,7 +42,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         seed=config["seed"],
         vec_env_cls=DummyVecEnv,
     )
-    eval_env.env_method("set_use_expert_action", 1, False, "", False, 0.0, False)
+    eval_env.env_method("set_use_expert_action", 1, False, "", False, 0.0, False, False)
 
     eval_env = VecVideoRecorder(
         eval_env,
