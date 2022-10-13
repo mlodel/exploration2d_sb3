@@ -132,3 +132,5 @@ dmypy.json
 
 # WandB
 wandb/
+
+stdout_temp.txt
