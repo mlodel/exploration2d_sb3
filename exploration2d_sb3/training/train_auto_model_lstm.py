@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 "level": 1,
             },
             {
-                "total_timesteps": 20e6,
+                "total_timesteps": 15e6,
                 "level": 2,
             },
         ],
