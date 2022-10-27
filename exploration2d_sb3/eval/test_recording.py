@@ -18,7 +18,7 @@ logger.set_level(logger.DEBUG)
 
 if __name__ == "__main__":
 
-    model_path = os.path.join(os.getcwd(), "trained_policies/ppo_nsteps-32_3goals.zip")
+    model_path = os.path.join(os.getcwd(), "trained_policies/map_pointnav_ppo.zip")
 
     env = make_vec_env(
         "Navigation2D-v0",
