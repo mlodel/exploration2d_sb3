@@ -24,6 +24,7 @@ if __name__ == "__main__":
     args = get_args()
 
     device = th.device("cuda:0" if th.cuda.is_available() else "cpu")
+    print("Using device: ", th.cuda.get_device_name(device))
 
     # Configs
     config = {
@@ -41,7 +42,7 @@ if __name__ == "__main__":
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
-            "n_steps": 128,
+            "n_steps": 256,
             "batch_size": 512,
             "n_epochs": 5,
             "clip_range": 0.2,
