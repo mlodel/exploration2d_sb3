@@ -1,2 +1,3 @@
 wandb
 tensorboard
+ffmpeg-python
