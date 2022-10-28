@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import time
+from torch.nn import functional as F
+
 
 print("PyTorch version: ", torch.__version__)
 print("CUDA version: ", torch.version.cuda)
@@ -18,10 +20,16 @@ def profile(model, x, benchmark, nb_iters):
     for _ in range(10):
         out = model(x)
 
+    shape = out.shape
+
+    y = torch.rand(shape, device=x.device)
+
     torch.cuda.synchronize()
     t0 = time.time()
     for _ in range(nb_iters):
         out = model(x)
+        loss = F.mse_loss(out, y)
+        loss.backward()
     torch.cuda.synchronize()
     t1 = time.time()
 
