@@ -153,9 +153,7 @@ if __name__ == "__main__":
 
         profiler.disable()
         stats = pstats.Stats(profiler)
-        stats.sort_stats('cumulative').print_stats(20)
-        stats.dump_stats(
-            os.path.dirname(save_path + "/stats.prof")
-        )
+        stats.sort_stats("cumulative").print_stats(20)
+        stats.dump_stats(save_path + "/stats.prof")
 
     model.save(save_path + "/model_final")

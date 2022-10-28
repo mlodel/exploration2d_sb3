@@ -19,6 +19,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         n_envs=config["n_envs"],
         seed=config["seed"],
         vec_env_cls=SubprocVecEnv if config["n_envs"] > 1 else DummyVecEnv,
+        # vec_env_cls=DummyVecEnv,
     )
     # Normalize Environment
     gamma = config["alg_params"]["gamma"] if not eval else 1
