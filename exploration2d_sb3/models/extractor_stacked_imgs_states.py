@@ -58,7 +58,7 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
         ]
         self.cfg_stacked_image_keys = [
             ["ego_binary_map", "ego_explored_map", "ego_goal_map", "ego_global_map"],
-            ["global_map", "goal_map", "pos_map", "binary_map", "explored_map"],
+            # ["global_map", "goal_map", "pos_map", "binary_map", "explored_map"],
         ]
 
         # State input settings

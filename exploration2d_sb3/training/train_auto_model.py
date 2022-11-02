@@ -29,8 +29,9 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 8,
+        "n_envs": 16,
         "total_steps": 2e7,  # used only if use_curriculum is False
+        "eval_freq": 2e5,
         "norm_rewards": True,
         "norm_obs": False,
         "alg_params": {
@@ -42,7 +43,7 @@ if __name__ == "__main__":
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
-            "n_steps": 256,
+            "n_steps": 128,
             "batch_size": 512,
             "n_epochs": 5,
             "clip_range": 0.2,
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     # Setup callbacks
     # Save a checkpoint every n steps and log to WandB
     wandb_callback = WandbCallback(
-        model_save_freq=int(2e5 // config["n_envs"]),
+        model_save_freq=int(config["eval_freq"] // config["n_envs"]),
         model_save_path=save_path + "/checkpoints",
         verbose=2,
     )
@@ -117,7 +118,7 @@ if __name__ == "__main__":
     # Evaluate the agent every n steps and save video
     eval_callback = EvalCallback(
         eval_env=eval_env,
-        eval_freq=int(2e5 // config["n_envs"]),
+        eval_freq=int(config["eval_freq"] // config["n_envs"]),
         n_eval_episodes=1,
         callback_after_eval=StoreVideoCallback(eval_env),
         verbose=1,
@@ -125,22 +126,27 @@ if __name__ == "__main__":
     )
 
     # Train
-    # Curriculum learning
-    if config["use_curriculum"]:
-        for level in config["curriculum"]:
-            print("Starting curriculum level {}".format(level["level"]))
-            set_env_level(model.env, level["level"])
-            set_env_level(eval_callback.eval_env, level["level"])
+    # Save model when training crashes
+    try:
+        # Curriculum learning
+        if config["use_curriculum"]:
+            for level in config["curriculum"]:
+                print("Starting curriculum level {}".format(level["level"]))
+                set_env_level(model.env, level["level"])
+                set_env_level(eval_callback.eval_env, level["level"])
+                model.learn(
+                    total_timesteps=level["total_timesteps"],
+                    callback=[wandb_callback, eval_callback],
+                    reset_num_timesteps=False,
+                )
+                model.save(save_path + "/model_level" + str(level["level"]))
+        else:
             model.learn(
-                total_timesteps=level["total_timesteps"],
+                total_timesteps=int(config["total_steps"]),
                 callback=[wandb_callback, eval_callback],
                 reset_num_timesteps=False,
             )
-            model.save(save_path + "/model_level" + str(level["level"]))
-    else:
-        model.learn(
-            total_timesteps=int(config["total_steps"]),
-            callback=[wandb_callback, eval_callback],
-            reset_num_timesteps=False,
-        )
-    model.save(save_path + "/model_final")
+        model.save(save_path + "/model_final")
+    except:
+        model.save(save_path + "/checkpoints/model.zip")
+        raise

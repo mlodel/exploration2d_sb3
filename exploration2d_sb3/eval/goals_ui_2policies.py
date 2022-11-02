@@ -38,17 +38,17 @@ if __name__ == "__main__":
 
     # Init Policies
     model_path_expl = os.path.join(
-        os.getcwd(), "trained_policies/map_exploration_ppo.zip"
+        os.getcwd(), "trained_policies/map_exploration_ppo_jump.zip"
     )
-    obs_keys_expl = ["pos_global_frame", "vel_global_frame", "ego_binary_map", "ego_explored_map", "local_grid"]
+    obs_keys_expl = ["pos_global_frame", "vel_global_frame", "ego_binary_map", "ego_global_map", "local_grid"]
     model_path_goal = os.path.join(
-        os.getcwd(), "trained_policies/map_pointnav_ppo-lstm.zip"
+        os.getcwd(), "trained_policies/map_pointnav_ppo_jump.zip"
     )
-    obs_keys_goal = ["pos_global_frame", "vel_global_frame", "goal_global_frame", "ego_explored_map", "local_grid"]
+    obs_keys_goal = ["rel_goal", "vel_global_frame", "ego_global_map", "ego_goal_map", "local_grid"]
 
     model_expl = PPO.load(model_path_expl)
-    model_goal = RecurrentPPO.load(model_path_goal)
-    # model_goal = PPO.load(model_path_goal)
+    # model_goal = RecurrentPPO.load(model_path_goal)
+    model_goal = PPO.load(model_path_goal)
 
     # Get initial rendering
     obs = env.reset()
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                 #         env.set_use_expert_action(
                 #             1, False, "ig_greedy", False, 0.0, False
                 #         )
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Set the x, y postions of the mouse click
                 coord = event.pos
                 image_clicked = True
@@ -123,13 +123,21 @@ if __name__ == "__main__":
         # Step and render environment
         obs, reward, dones, info = env.step(action)
 
-        if dones:
+        if info["is_at_goal"]:
             if goal_available:
                 print("Goal reached!")
                 goal_available = False
+                env.set_new_human_goal(coord=(0,0), reset_goal=True)
+
+
+        if dones:
+            if info["ran_out_of_time"]:
+                print("Ran out of time")
             else:
-                print("Exploration done!")
-                obs = env.reset()
+                print("Targets found!")
+            obs = env.reset()
+            print(" --- New episode --- ")
+            goal_available = False
 
         opencv_image = env.render(mode="rgb_array")
 
