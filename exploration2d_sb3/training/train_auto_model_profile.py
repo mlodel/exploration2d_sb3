@@ -19,6 +19,7 @@ from exploration2d_sb3.models.extractor_stacked_imgs_states import (
 )
 
 from exploration2d_sb3.training.callbacks.store_video import StoreVideoCallback
+from exploration2d_sb3.training.callbacks.log_info_callback import LogInfoCallback
 
 import cProfile
 import pstats
@@ -127,6 +128,12 @@ if __name__ == "__main__":
         log_path=os.path.join(save_path, "eval"),
     )
 
+    # Log info for each rollout
+    log_info_callback = LogInfoCallback(
+        n_envs=config["n_envs"],
+        n_steps=config["alg_params"]["n_steps"],
+    )
+
     # Train
     # Curriculum learning
     if config["use_curriculum"]:
@@ -136,7 +143,7 @@ if __name__ == "__main__":
             set_env_level(eval_callback.eval_env, level["level"])
             model.learn(
                 total_timesteps=level["total_timesteps"],
-                callback=[wandb_callback, eval_callback],
+                callback=[wandb_callback, eval_callback, log_info_callback],
                 reset_num_timesteps=False,
             )
             model.save(save_path + "/model_level" + str(level["level"]))
@@ -147,7 +154,7 @@ if __name__ == "__main__":
 
         model.learn(
             total_timesteps=int(config["total_steps"]),
-            callback=[wandb_callback, eval_callback],
+            callback=[wandb_callback, eval_callback, log_info_callback],
             reset_num_timesteps=False,
         )
 

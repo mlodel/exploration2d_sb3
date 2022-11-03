@@ -44,7 +44,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         vec_env_cls=DummyVecEnv,
     )
     eval_env.env_method("set_use_expert_action", 1, False, "", False, 0.0, False, False)
-
+    eval_env.env_method("set_test_mode", True)
     eval_env = VecVideoRecorder(
         eval_env,
         os.path.join(save_path, "videos/"),
