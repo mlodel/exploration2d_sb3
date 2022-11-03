@@ -30,21 +30,23 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 16,
+        "n_envs": 4,
         "total_steps": 2e7,  # used only if use_curriculum is False
         "eval_freq": 2e5,
         "norm_rewards": True,
         "norm_obs": False,
         "alg_params": {
             "policy_kwargs": dict(
-                net_arch=[256, dict(pi=[256], vf=[256])],
+                net_arch=[512, dict(pi=[256], vf=[256])],
                 normalize_images=False,
                 features_extractor_class=StackedImgStateExtractor,
-                features_extractor_kwargs=dict(device=device),
+                features_extractor_kwargs=dict(
+                    device=device, cnn_encoder_name="CnnEncoder"
+                ),
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
-            "n_steps": 128,
+            "n_steps": 512,
             "batch_size": 512,
             "n_epochs": 5,
             "clip_range": 0.2,

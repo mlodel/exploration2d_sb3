@@ -3,37 +3,20 @@ import numpy as np
 import torch as th
 from torch import nn
 
-from stable_baselines3.common.torch_layers import BaseFeaturesExtractor, NatureCNN
-from stable_baselines3.common.preprocessing import get_flattened_obs_dim
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
-
-class CnnEncoder(nn.Module):
-    def __init__(
-        self, n_input_channels: int, n_output_features: int, sample_input: np.ndarray
-    ):
-        super().__init__()
-        self.cnn = nn.Sequential(
-            nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=0),
-            nn.ReLU(),
-            nn.Flatten(),
-        )
-
-        # Compute shape by doing one forward pass
-        with th.no_grad():
-            n_flatten = self.cnn(th.as_tensor(sample_input[None]).float()).shape[1]
-
-        self.fc = nn.Sequential(nn.Linear(n_flatten, n_output_features), nn.ReLU())
-
-    def forward(self, observations: th.Tensor) -> th.Tensor:
-        return self.fc(self.cnn(observations))
+from exploration2d_sb3.models.cnn_encoders import CnnEncoder, CnnMapEncoder
 
 
 class StackedImgStateExtractor(BaseFeaturesExtractor):
-    def __init__(self, observation_space: gym.spaces.Dict, device: th.device):
+    def __init__(
+        self,
+        observation_space: gym.spaces.Dict,
+        device: th.device,
+        cnn_encoder_name: str = "CnnEncoder",
+        cnn_output_dim: int = 512,
+        state_output_dim: int = 32,
+    ):
         # We do not know features-dim here before going over all the items,
         # so put something dummy for now. PyTorch requires calling
         # nn.Module.__init__ before adding modules
@@ -42,7 +25,8 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
         )
 
         # Policy Settings
-        cnn_output_dim = 256
+
+        cnn_class = globals()[cnn_encoder_name]
 
         # TODO move settings to arguments
         # Image input settings
@@ -115,7 +99,7 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
                     self.single_img_keys.append(key)
                     n_input_channels = subspace.shape[0]
                     cnn_encoder_single.append(
-                        CnnEncoder(
+                        cnn_class(
                             n_input_channels=n_input_channels,
                             n_output_features=cnn_output_dim,
                             sample_input=subspace.sample(),
@@ -139,7 +123,7 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
                 raise ValueError(
                     "Image observations to be stacked must have the same shape!"
                 )
-            cnn_encoder_stacks[i] = CnnEncoder(
+            cnn_encoder_stacks[i] = cnn_class(
                 n_input_channels=n_stacked_img_channels[i],
                 n_output_features=cnn_output_dim,
                 sample_input=sample_input,
@@ -153,9 +137,9 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
         # total_concat_size += n_states  # get_flattened_obs_dim(subspace)
 
         self.state_encoder = nn.Linear(
-            in_features=n_states, out_features=cnn_output_dim
+            in_features=n_states, out_features=state_output_dim
         )
-        total_concat_size += cnn_output_dim
+        total_concat_size += state_output_dim
 
         # Update the features dim manually
         self._features_dim = total_concat_size
