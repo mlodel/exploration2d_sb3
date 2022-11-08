@@ -51,17 +51,27 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
             "angvel_global_frame",
             "pos_global_frame",
             "vel_global_frame",
+            "goal_global_frame",
+            "rel_goal",
         ]
         self.vector_scales = {
             "heading_global_frame": [-th.pi, th.pi],
             "angvel_global_frame": [-3.0, 3.0],
             "pos_global_frame": [
-                th.Tensor([-10.0, -10.0]).to(device),
-                th.Tensor([10.0, 10.0]).to(device),
+                th.Tensor([-20.0, -20.0]).to(device),
+                th.Tensor([20.0, 20.0]).to(device),
             ],
             "vel_global_frame": [
-                th.Tensor([-3.0, -3.0]).to(device),
-                th.Tensor([3.0, 3.0]).to(device),
+                th.Tensor([-1.0, -1.0]).to(device),
+                th.Tensor([1.0, 1.0]).to(device),
+            ],
+            "goal_global_frame": [
+                th.Tensor([-20.0, -20.0]).to(device),
+                th.Tensor([20.0, 20.0]).to(device),
+            ],
+            "rel_goal": [
+                th.Tensor([-20.0, -20.0]).to(device),
+                th.Tensor([20.0, 20.0]).to(device),
             ],
         }
 
