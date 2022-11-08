@@ -37,6 +37,13 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
     for i in range(config["n_envs"]):
         envs.env_method("set_n_env", config["n_envs"], i, True, indices=i)
 
+    # Get eval environment
+    eval_env = init_eval_env(config, save_path)
+
+    return envs, eval_env
+
+
+def init_eval_env(config, save_path):
     eval_env = make_vec_env(
         "Navigation2D-v0",
         n_envs=1,
@@ -52,8 +59,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         video_length=200,
         name_prefix="eval",
     )
-
-    return envs, eval_env
+    return eval_env
 
 
 def set_env_level(env, level):

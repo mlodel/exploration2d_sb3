@@ -41,3 +41,16 @@ def get_save_path(resume=False, run: wandb.run = None):
     print("Log path: {}".format(save_path))
 
     return save_path
+
+def init_eval_log_dir(config):
+    log_dir = os.getcwd() + "/eval_data"
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+    project_log_dir = os.path.join(log_dir, config["wandb"]["project"])
+    if not os.path.exists(project_log_dir):
+        os.mkdir(project_log_dir)
+    run_log_dir = os.path.join(project_log_dir, config["wandb"]["run_id"])
+    if not os.path.exists(run_log_dir):
+        os.mkdir(run_log_dir)
+
+    return run_log_dir
