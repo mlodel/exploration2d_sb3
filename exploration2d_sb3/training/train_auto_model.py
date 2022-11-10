@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 8,
+        "n_envs": 16,
         "total_steps": 2e7,  # used only if use_curriculum is False
         "eval_freq": 2e5,
         "norm_rewards": True,
@@ -46,11 +46,11 @@ if __name__ == "__main__":
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
-            "n_steps": 256,
+            "n_steps": 128,
             "batch_size": 512,
             "n_epochs": 5,
             "clip_range": 0.2,
-            "ent_coef": 0.05,
+            "ent_coef": 0.025,
             "vf_coef": 0.5,
             "target_kl": 0.01,
         },
@@ -143,8 +143,6 @@ if __name__ == "__main__":
                 print("Starting curriculum level {}".format(level["level"]))
                 set_env_level(model.env, level["level"])
                 set_env_level(eval_callback.eval_env, level["level"])
-                if level["level"] == 2:
-                    model.ent_coef = 0.01
                 model.learn(
                     total_timesteps=level["total_timesteps"],
                     callback=[wandb_callback, eval_callback, log_info_callback],
@@ -159,5 +157,10 @@ if __name__ == "__main__":
             )
         model.save(save_path + "/model_final")
     except:
-        model.save(save_path + "/checkpoints/model.zip")
+        print("Saving model due to crash")
+        try:
+            wandb_callback.save_model()
+        except:
+            model.save(save_path + "/checkpoints/model")
+            wandb.save(save_path + "/checkpoints/model.zip", base_path=save_path+"/checkpoints/")
         raise
