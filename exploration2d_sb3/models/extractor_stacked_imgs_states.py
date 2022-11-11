@@ -74,6 +74,10 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
                 th.Tensor([-20.0, -20.0]).to(device),
                 th.Tensor([20.0, 20.0]).to(device),
             ],
+            "last_goal": [
+                th.Tensor([-1.0, -1.0]).to(device),
+                th.Tensor([1.0, 1.0]).to(device),
+            ],
         }
 
         total_concat_size = 0
