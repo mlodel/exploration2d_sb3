@@ -53,6 +53,7 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
             "vel_global_frame",
             "goal_global_frame",
             "rel_goal",
+            "last_goal",
         ]
         self.vector_scales = {
             "heading_global_frame": [-th.pi, th.pi],

@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     config = dict(
         wandb=dict(
-            run_id="24cwganh",
+            run_id="z3ufgkvb",
             project="exploration_sb3_maps",
             entity="delft-amr",
         ),
@@ -84,13 +84,6 @@ if __name__ == "__main__":
         "clip_range": lambda _: 0.0,
     }
     model = PPO.load(model_path, env=env, custom_objects=custom_objects)
-    obs_keys_goal = [
-        "rel_goal",
-        "vel_global_frame",
-        "ego_global_map",
-        "ego_goal_map",
-        "local_grid",
-    ]
 
     episode_rewards, episode_length = evaluate_policy(
         model=model,
