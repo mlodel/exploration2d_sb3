@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch as th
 from torch import nn
 
@@ -57,7 +57,6 @@ class ImgStateExtractor(BaseFeaturesExtractor):
 
         # self.extractors contain nn.Modules that do all the processing.
         for key, extractor in self.extractors.items():
-
             # Preprocess obs
             if key in self.image_keys:
                 obs = observations[key].float() / 255.0

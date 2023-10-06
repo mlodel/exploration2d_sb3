@@ -1,7 +1,10 @@
 import torch as th
 import os
-import gym
+
+# import gym
 import gym_navigation2d
+from gymnasium.envs.registration import register
+
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback
@@ -30,31 +33,33 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 16,
+        "n_envs": 1,
         "total_steps": 2e7,  # used only if use_curriculum is False
         "eval_freq": 2e5,
         "norm_rewards": True,
         "norm_obs": False,
         "alg_params": {
             "policy_kwargs": dict(
-                net_arch=[512, dict(pi=[256], vf=[256])],
+                net_arch=dict(pi=[256, 256], vf=[256, 256]),
                 normalize_images=False,
                 features_extractor_class=StackedImgStateExtractor,
                 features_extractor_kwargs=dict(
                     device=device, cnn_encoder_name="CnnEncoder"
                 ),
+                share_features_extractor=True,
+                ortho_init=False,
             ),
             "learning_rate": 1e-5,
             "gamma": 0.99,
             "n_steps": 128,
-            "batch_size": 512,
+            "batch_size": 128,
             "n_epochs": 5,
             "clip_range": 0.2,
             "ent_coef": 0.025,
             "vf_coef": 0.5,
             "target_kl": 0.01,
         },
-        "use_curriculum": True,
+        "use_curriculum": False,
         "curriculum": [
             {
                 "total_timesteps": 5e6,
@@ -162,5 +167,8 @@ if __name__ == "__main__":
             wandb_callback.save_model()
         except:
             model.save(save_path + "/checkpoints/model")
-            wandb.save(save_path + "/checkpoints/model.zip", base_path=save_path+"/checkpoints/")
+            wandb.save(
+                save_path + "/checkpoints/model.zip",
+                base_path=save_path + "/checkpoints/",
+            )
         raise

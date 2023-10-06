@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import torch as th
 from torch import nn
@@ -39,9 +39,16 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
             "global_map",
             "goal_map",
             "pos_map",
+            "ego_entropy_map",
         ]
         self.cfg_stacked_image_keys = [
-            ["ego_binary_map", "ego_explored_map", "ego_goal_map", "ego_global_map"],
+            [
+                "ego_binary_map",
+                "ego_explored_map",
+                "ego_goal_map",
+                "ego_global_map",
+                "ego_entropy_map",
+            ],
             # ["global_map", "goal_map", "pos_map", "binary_map", "explored_map"],
         ]
 
