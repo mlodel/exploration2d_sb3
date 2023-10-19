@@ -42,6 +42,7 @@ def get_save_path(resume=False, run: wandb.run = None):
 
     return save_path
 
+
 def init_eval_log_dir(config):
     log_dir = os.getcwd() + "/eval_data"
     if not os.path.exists(log_dir):

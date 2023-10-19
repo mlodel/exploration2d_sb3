@@ -6,7 +6,7 @@ from stable_baselines3.common.vec_env import (
     SubprocVecEnv,
     VecNormalize,
     DummyVecEnv,
-    VecVideoRecorder,
+    VecMonitor,
 )
 
 from gym_navigation2d.config.config import Config
@@ -25,6 +25,8 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.MAX_TIME_STEPS = 128 * config.REPEAT_STEPS
     config.JUMP_MODE = True
     config.IG_EXTERNAL_POLICY = True
+    config.IG_SENSE_RADIUS = 3.0
+    config.IG_COVERAGE_TERMINATE = True
     config.SUBGOAL_ACTION_SPACE = {
         "is_discrete": True,
         "discrete_subgoal_n_angles": 12,
@@ -35,8 +37,9 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.AUTO_RENDER = False
     config.RENDER_AFTER_POLICY = False
     config.RENDER_VIDEO = eval_video
-    config.RENDER_VIDEO_PATH = save_path
-    config.RENDER_VIDEO_FPS = 25
+    if save_path is not None:
+        config.RENDER_VIDEO_PATH = os.path.join(save_path, "eval")
+    config.RENDER_FPS = 25
     config.RENDER_VIDEO_SPEEDUP = 2
     config.RENDER_EXPLORED_MAP = False
     config.OUTPUT_FILENAME = "eval_env"
@@ -72,9 +75,11 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     return config
 
 
-def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
+def init_env(
+    config, save_path, norm_rewards=True, norm_obs=False, eval=False, map_level=1
+):
     # Generate Environment
-    config_train = get_config(eval_env=False, save_path=None)
+    config_train = get_config(eval_env=False, save_path=save_path)
     check_env(gym.make("Navigation2D-v0", config=config_train))
     envs = make_vec_env(
         "Navigation2D-v0",
@@ -84,6 +89,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
         # wrapper_class=gym.wrappers.TimeLimit,
         env_kwargs=dict(config=config_train),
     )
+    envs.env_method("set_level", map_level)
     # Normalize Environment
     gamma = config["alg_params"]["gamma"] if not eval else 1
     envs = VecNormalize(
@@ -106,7 +112,7 @@ def init_env(config, save_path, norm_rewards=True, norm_obs=False, eval=False):
 
 def init_eval_env(config, save_path):
     # Generate Environment
-    config_eval = get_config(eval_env=True, save_path=save_path)
+    config_eval = get_config(eval_env=True, save_path=save_path, eval_video=True)
     eval_env = make_vec_env(
         "Navigation2D-v0",
         n_envs=1,
@@ -122,6 +128,9 @@ def init_eval_env(config, save_path):
     #     video_length=200,
     #     name_prefix="eval",
     # )
+
+    eval_env = VecMonitor(eval_env)
+
     return eval_env
 
 

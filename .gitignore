@@ -134,3 +134,7 @@ dmypy.json
 wandb/
 
 stdout_temp.txt
+
+*.zip
+trained_policies/
+eval_data/

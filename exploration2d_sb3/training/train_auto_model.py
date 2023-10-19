@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 1,
+        "n_envs": 8,
         "total_steps": 2e7,  # used only if use_curriculum is False
         "eval_freq": 2e5,
         "norm_rewards": True,
@@ -52,10 +52,10 @@ if __name__ == "__main__":
             "learning_rate": 1e-5,
             "gamma": 0.99,
             "n_steps": 128,
-            "batch_size": 128,
+            "batch_size": 512,
             "n_epochs": 5,
             "clip_range": 0.2,
-            "ent_coef": 0.025,
+            "ent_coef": 0.01,
             "vf_coef": 0.5,
             "target_kl": 0.01,
         },
@@ -70,6 +70,7 @@ if __name__ == "__main__":
                 "level": 2,
             },
         ],
+        "map_level": 2,
     }
 
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
@@ -112,7 +113,7 @@ if __name__ == "__main__":
 
         # Generate and Initialize Environment
         config["n_envs"] = model.n_envs
-        envs, eval_env = init_env(config, save_path)
+        envs, eval_env = init_env(config, save_path, map_level=config["map_level"])
         model.set_env(envs)
 
     # Setup callbacks
@@ -128,7 +129,7 @@ if __name__ == "__main__":
         eval_env=eval_env,
         eval_freq=int(config["eval_freq"] // config["n_envs"]),
         n_eval_episodes=1,
-        callback_after_eval=StoreVideoCallback(eval_env),
+        # callback_after_eval=StoreVideoCallback(eval_env),
         verbose=1,
         log_path=os.path.join(save_path, "eval"),
     )
