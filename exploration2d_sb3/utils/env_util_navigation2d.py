@@ -7,6 +7,7 @@ from stable_baselines3.common.vec_env import (
     VecNormalize,
     DummyVecEnv,
     VecMonitor,
+    VecEnvWrapper,
 )
 
 from gym_navigation2d.config.config import Config
@@ -129,7 +130,12 @@ def init_eval_env(config, save_path):
     #     name_prefix="eval",
     # )
 
-    eval_env = VecMonitor(eval_env)
+    eval_env = VecNormalize(
+        eval_env,
+        norm_reward=False,
+        norm_obs=False,
+        clip_obs=255,
+    )
 
     return eval_env
 
