@@ -34,6 +34,10 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
         "discrete_subgoal_radii": [2.0],
         "continuous_subgoal_max": 3.0,
     }
+    config.SUBMAP_LOOKAHEAD = 3.0  # config.IG_SENSE_RADIUS
+
+    # config.IG_REWARD_COVERAGE_FINISHED = 1.0
+    # config.REWARD_MAX_IG = 1.1
 
     config.AUTO_RENDER = False
     config.RENDER_AFTER_POLICY = False
@@ -53,7 +57,7 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     ]
 
     config.STATES_IN_OBS = [
-        "heading_global_frame",
+        # "heading_global_frame",
         # "angvel_global_frame",
         "pos_global_frame",
         "vel_global_frame",
