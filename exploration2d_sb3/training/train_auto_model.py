@@ -33,9 +33,9 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 8,
-        "total_steps": 2e7,  # used only if use_curriculum is False
-        "eval_freq": 2e5,
+        "n_envs": 32,
+        "total_steps": 5e6,  # used only if use_curriculum is False
+        "eval_freq": 1e5,
         "norm_rewards": True,
         "norm_obs": False,
         "alg_params": {
@@ -49,24 +49,24 @@ if __name__ == "__main__":
                 share_features_extractor=True,
                 ortho_init=False,
             ),
-            "learning_rate": 1e-5,
+            "learning_rate": 5e-5,
             "gamma": 0.99,
             "n_steps": 128,
-            "batch_size": 512,
-            "n_epochs": 5,
+            "batch_size": 2048,
+            "n_epochs": 10,
             "clip_range": 0.2,
             "ent_coef": 0.01,
             "vf_coef": 0.5,
-            "target_kl": 0.01,
+            "target_kl": 0.005,
         },
-        "use_curriculum": False,
+        "use_curriculum": True,
         "curriculum": [
             {
-                "total_timesteps": 5e6,
+                "total_timesteps": 2e6,
                 "level": 1,
             },
             {
-                "total_timesteps": 25e6,
+                "total_timesteps": 20e6,
                 "level": 2,
             },
         ],

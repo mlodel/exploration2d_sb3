@@ -36,8 +36,8 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     }
     config.SUBMAP_LOOKAHEAD = 3.0  # config.IG_SENSE_RADIUS
 
-    # config.IG_REWARD_COVERAGE_FINISHED = 1.0
-    # config.REWARD_MAX_IG = 1.1
+    config.IG_REWARD_COVERAGE_FINISHED = 1.0
+    config.REWARD_MAX_IG = 1.1
 
     config.AUTO_RENDER = False
     config.RENDER_AFTER_POLICY = False
