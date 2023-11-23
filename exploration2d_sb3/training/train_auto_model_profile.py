@@ -1,7 +1,10 @@
 import torch as th
 import os
-import gym
+
+# import gym
 import gym_navigation2d
+from gymnasium.envs.registration import register
+
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback
@@ -34,20 +37,25 @@ if __name__ == "__main__":
     config = {
         "seed": 0,
         "n_envs": 8,
-        "total_steps": 20000,  # used only if use_curriculum is False
+        "total_steps": 2e5,  # used only if use_curriculum is False
+        "eval_freq": 1e4,
         "norm_rewards": True,
         "norm_obs": False,
         "alg_params": {
             "policy_kwargs": dict(
-                net_arch=[256, dict(pi=[256], vf=[256])],
+                net_arch=dict(pi=[256, 256], vf=[256, 256]),
                 normalize_images=False,
                 features_extractor_class=StackedImgStateExtractor,
-                features_extractor_kwargs=dict(device=device),
+                features_extractor_kwargs=dict(
+                    device=device, cnn_encoder_name="CnnEncoder"
+                ),
+                share_features_extractor=True,
+                ortho_init=False,
             ),
-            "learning_rate": 1e-5,
+            "learning_rate": 1e-4,
             "gamma": 0.99,
-            "n_steps": 256,
-            "batch_size": 512,
+            "n_steps": 128,
+            "batch_size": 1042,
             "n_epochs": 5,
             "clip_range": 0.2,
             "ent_coef": 0.01,
@@ -57,14 +65,15 @@ if __name__ == "__main__":
         "use_curriculum": False,
         "curriculum": [
             {
-                "total_timesteps": 5e6,
+                "total_timesteps": 1e5,
                 "level": 1,
             },
             {
-                "total_timesteps": 15e6,
+                "total_timesteps": 25e6,
                 "level": 2,
             },
         ],
+        "map_level": 1,
     }
 
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
@@ -107,13 +116,13 @@ if __name__ == "__main__":
 
         # Generate and Initialize Environment
         config["n_envs"] = model.n_envs
-        envs, eval_env = init_env(config, save_path)
+        envs, eval_env = init_env(config, save_path, map_level=config["map_level"])
         model.set_env(envs)
 
     # Setup callbacks
     # Save a checkpoint every n steps and log to WandB
     wandb_callback = WandbCallback(
-        model_save_freq=int(2e5 // config["n_envs"]),
+        model_save_freq=int(config["eval_freq"] // config["n_envs"]),
         model_save_path=save_path + "/checkpoints",
         verbose=2,
     )
@@ -121,9 +130,9 @@ if __name__ == "__main__":
     # Evaluate the agent every n steps and save video
     eval_callback = EvalCallback(
         eval_env=eval_env,
-        eval_freq=int(2e5 // config["n_envs"]),
+        eval_freq=int(config["eval_freq"] // config["n_envs"]),
         n_eval_episodes=1,
-        callback_after_eval=StoreVideoCallback(eval_env),
+        # callback_after_eval=StoreVideoCallback(eval_env),
         verbose=1,
         log_path=os.path.join(save_path, "eval"),
     )
@@ -135,32 +144,44 @@ if __name__ == "__main__":
     )
 
     # Train
-    # Curriculum learning
-    if config["use_curriculum"]:
-        for level in config["curriculum"]:
-            print("Starting curriculum level {}".format(level["level"]))
-            set_env_level(model.env, level["level"])
-            set_env_level(eval_callback.eval_env, level["level"])
-            model.learn(
-                total_timesteps=level["total_timesteps"],
-                callback=[wandb_callback, eval_callback, log_info_callback],
-                reset_num_timesteps=False,
-            )
-            model.save(save_path + "/model_level" + str(level["level"]))
-    else:
-
+    # Save model when training crashes
+    try:
         profiler = cProfile.Profile()
         profiler.enable()
 
-        model.learn(
-            total_timesteps=int(config["total_steps"]),
-            callback=[wandb_callback, eval_callback, log_info_callback],
-            reset_num_timesteps=False,
-        )
+        # Curriculum learning
+        if config["use_curriculum"]:
+            for level in config["curriculum"]:
+                print("Starting curriculum level {}".format(level["level"]))
+                set_env_level(model.env, level["level"])
+                set_env_level(eval_callback.eval_env, level["level"])
+                model.learn(
+                    total_timesteps=level["total_timesteps"],
+                    callback=[wandb_callback, eval_callback, log_info_callback],
+                    reset_num_timesteps=False,
+                )
+                model.save(save_path + "/model_level" + str(level["level"]))
+        else:
+            model.learn(
+                total_timesteps=int(config["total_steps"]),
+                callback=[wandb_callback, eval_callback, log_info_callback],
+                reset_num_timesteps=False,
+            )
+        model.save(save_path + "/model_final")
 
         profiler.disable()
         stats = pstats.Stats(profiler)
         stats.sort_stats("cumulative").print_stats(20)
         stats.dump_stats(save_path + "/stats.prof")
 
-    model.save(save_path + "/model_final")
+    except:
+        print("Saving model due to crash")
+        try:
+            wandb_callback.save_model()
+        except:
+            model.save(save_path + "/checkpoints/model")
+            wandb.save(
+                save_path + "/checkpoints/model.zip",
+                base_path=save_path + "/checkpoints/",
+            )
+        raise
