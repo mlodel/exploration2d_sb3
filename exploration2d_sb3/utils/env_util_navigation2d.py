@@ -28,10 +28,11 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.IG_EXTERNAL_POLICY = True
     config.IG_SENSE_RADIUS = 3.0
     config.IG_COVERAGE_TERMINATE = True
+    config.IG_THRES_AVG_CELL_ENTROPY = 0.01
     config.SUBGOAL_ACTION_SPACE = {
         "is_discrete": True,
         "discrete_subgoal_n_angles": 12,
-        "discrete_subgoal_radii": [2.0],
+        "discrete_subgoal_radii": [1.0],
         "continuous_subgoal_max": 3.0,
     }
     config.SUBMAP_LOOKAHEAD = 3.0  # config.IG_SENSE_RADIUS
