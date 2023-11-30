@@ -22,19 +22,23 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.TEST_MODE = eval_env
     config.RL_MODE = True
 
-    config.REPEAT_STEPS = 1
+    config.DT = 0.05  # HMPC: 0.25
+    config.REPEAT_STEPS = 10  # HMPC: 2
+    config.FEASIBLE_JUMP_MAX_DIST = 0.1  # HMPC: 0.5
     config.MAX_TIME_STEPS = 128 * config.REPEAT_STEPS
     config.JUMP_MODE = True
     config.IG_EXTERNAL_POLICY = True
-    config.IG_SENSE_RADIUS = 3.0
+
     config.IG_COVERAGE_TERMINATE = True
     config.SUBGOAL_ACTION_SPACE = {
         "is_discrete": True,
         "discrete_subgoal_n_angles": 12,
-        "discrete_subgoal_radii": [2.0],
+        "discrete_subgoal_radii": [2.0],  # HMPC: 2.0
         "continuous_subgoal_max": 3.0,
     }
-    config.SUBMAP_LOOKAHEAD = 3.0  # config.IG_SENSE_RADIUS
+
+    config.IG_SENSE_RADIUS = 2.0
+    config.SUBMAP_LOOKAHEAD = 2.0  # config.IG_SENSE_RADIUS
 
     config.IG_REWARD_COVERAGE_FINISHED = 1.0
     config.REWARD_MAX_IG = 1.1
@@ -120,9 +124,9 @@ def init_eval_env(config, save_path):
     config_eval = get_config(eval_env=True, save_path=save_path, eval_video=True)
     eval_env = make_vec_env(
         "Navigation2D-v0",
-        n_envs=1,
+        n_envs=config["n_envs"],
         seed=config["seed"],
-        vec_env_cls=DummyVecEnv,
+        vec_env_cls=SubprocVecEnv if config["n_envs"] > 1 else DummyVecEnv,
         # wrapper_class=gym.wrappers.TimeLimit,
         env_kwargs=dict(config=config_eval),
     )
@@ -133,6 +137,10 @@ def init_eval_env(config, save_path):
     #     video_length=200,
     #     name_prefix="eval",
     # )
+
+    # Set env ids for seeding
+    for i in range(config["n_envs"]):
+        eval_env.env_method("set_n_env", config["n_envs"], i, True, indices=i)
 
     eval_env = VecNormalize(
         eval_env,
