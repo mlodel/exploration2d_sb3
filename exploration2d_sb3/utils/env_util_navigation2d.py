@@ -30,6 +30,7 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.IG_EXTERNAL_POLICY = True
 
     config.IG_COVERAGE_TERMINATE = True
+    config.IG_THRES_AVG_CELL_ENTROPY = 0.01
     config.SUBGOAL_ACTION_SPACE = {
         "is_discrete": True,
         "discrete_subgoal_n_angles": 12,

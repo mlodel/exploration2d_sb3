@@ -36,8 +36,8 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 8,
-        "total_steps": 2e5,  # used only if use_curriculum is False
+        "n_envs": 1,
+        "total_steps": 2e4,  # used only if use_curriculum is False
         "eval_freq": 1e4,
         "norm_rewards": True,
         "norm_obs": False,
@@ -52,10 +52,10 @@ if __name__ == "__main__":
                 share_features_extractor=True,
                 ortho_init=False,
             ),
-            "learning_rate": 1e-4,
+            "learning_rate": 5e-5,
             "gamma": 0.99,
             "n_steps": 128,
-            "batch_size": 1042,
+            "batch_size": 128,
             "n_epochs": 5,
             "clip_range": 0.2,
             "ent_coef": 0.01,

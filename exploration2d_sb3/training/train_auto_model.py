@@ -57,12 +57,12 @@ if __name__ == "__main__":
             "clip_range": 0.2,
             "ent_coef": 0.01,
             "vf_coef": 0.5,
-            "target_kl": 0.005,
+            "target_kl": 0.01,
         },
         "use_curriculum": False,
         "curriculum": [
             {
-                "total_timesteps": 2e6,
+                "total_timesteps": 4e6,
                 "level": 1,
             },
             {
