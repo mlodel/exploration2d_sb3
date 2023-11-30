@@ -51,6 +51,7 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.RENDER_FPS = 25
     config.RENDER_VIDEO_SPEEDUP = 2
     config.RENDER_EXPLORED_MAP = False
+    config.RENDER_AT_SUBSTEPS = False
     config.OUTPUT_FILENAME = "eval_env"
 
     config.N_TARGETS = 0

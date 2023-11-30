@@ -2,7 +2,7 @@ import torch as th
 import os
 
 # import gym
-import gym_navigation2d
+import gym_navigation2d.register_gym
 from gymnasium.envs.registration import register
 
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
             "vf_coef": 0.5,
             "target_kl": 0.005,
         },
-        "use_curriculum": True,
+        "use_curriculum": False,
         "curriculum": [
             {
                 "total_timesteps": 2e6,
