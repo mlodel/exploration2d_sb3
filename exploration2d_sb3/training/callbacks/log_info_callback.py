@@ -61,24 +61,23 @@ class LogInfoCallback(BaseCallback):
             )
 
         # Log min/max of rewards and episode length if available
-        if len(self.model.ep_info_buffer) == 0:
-            return
-        self.logger.record(
-            "rollout/ep_rew_min",
-            np.min([ep_info["r"] for ep_info in self.model.ep_info_buffer]),
-        )
-        self.logger.record(
-            "rollout/ep_rew_max",
-            np.max([ep_info["r"] for ep_info in self.model.ep_info_buffer]),
-        )
-        self.logger.record(
-            "rollout/ep_len_min",
-            np.min([ep_info["l"] for ep_info in self.model.ep_info_buffer]),
-        )
-        self.logger.record(
-            "rollout/ep_len_max",
-            np.max([ep_info["l"] for ep_info in self.model.ep_info_buffer]),
-        )
+        if len(self.model.ep_info_buffer) >= 0:
+            self.logger.record(
+                "rollout/ep_rew_min",
+                np.min([ep_info["r"] for ep_info in self.model.ep_info_buffer]),
+            )
+            self.logger.record(
+                "rollout/ep_rew_max",
+                np.max([ep_info["r"] for ep_info in self.model.ep_info_buffer]),
+            )
+            self.logger.record(
+                "rollout/ep_len_min",
+                np.min([ep_info["l"] for ep_info in self.model.ep_info_buffer]),
+            )
+            self.logger.record(
+                "rollout/ep_len_max",
+                np.max([ep_info["l"] for ep_info in self.model.ep_info_buffer]),
+            )
 
         # Reset step
         self.step = 0
