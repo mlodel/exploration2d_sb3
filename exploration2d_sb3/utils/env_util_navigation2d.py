@@ -123,12 +123,12 @@ def init_env(
 
 def init_eval_env(config, save_path):
     # Generate Environment
-    config_eval = get_config(eval_env=True, save_path=save_path, eval_video=True)
+    config_eval = get_config(eval_env=True, save_path=save_path, eval_video=False)
     eval_env = make_vec_env(
         "Navigation2D-v0",
-        n_envs=config["n_envs"],
+        n_envs=config["n_eval_envs"],
         seed=config["seed"],
-        vec_env_cls=SubprocVecEnv if config["n_envs"] > 1 else DummyVecEnv,
+        vec_env_cls=SubprocVecEnv if config["n_eval_envs"] > 1 else DummyVecEnv,
         # wrapper_class=gym.wrappers.TimeLimit,
         env_kwargs=dict(config=config_eval),
     )
@@ -141,8 +141,8 @@ def init_eval_env(config, save_path):
     # )
 
     # Set env ids for seeding
-    for i in range(config["n_envs"]):
-        eval_env.env_method("set_n_env", config["n_envs"], i, True, indices=i)
+    for i in range(config["n_eval_envs"]):
+        eval_env.env_method("set_n_env", config["n_eval_envs"], i, True, indices=i)
 
     eval_env = VecNormalize(
         eval_env,

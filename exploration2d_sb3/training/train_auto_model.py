@@ -34,6 +34,7 @@ if __name__ == "__main__":
     config = {
         "seed": 0,
         "n_envs": 32,
+        "n_eval_envs": 8,
         "total_steps": 5e6,  # used only if use_curriculum is False
         "eval_freq": 1e5,
         "norm_rewards": True,
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     eval_callback = EvalCallback(
         eval_env=eval_env,
         eval_freq=int(config["eval_freq"] // config["n_envs"]),
-        n_eval_episodes=1,
+        n_eval_episodes=config["n_eval_envs"],
         # callback_after_eval=StoreVideoCallback(eval_env),
         verbose=1,
         log_path=os.path.join(save_path, "eval"),
