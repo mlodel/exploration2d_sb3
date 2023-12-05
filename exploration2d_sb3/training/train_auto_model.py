@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "seed": 0,
         "n_envs": 32,
         "n_eval_envs": 8,
-        "total_steps": 5e6,  # used only if use_curriculum is False
+        "total_steps": 10e6,  # used only if use_curriculum is False
         "eval_freq": 1e5,
         "norm_rewards": True,
         "norm_obs": False,

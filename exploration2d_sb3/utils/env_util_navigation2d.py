@@ -56,6 +56,7 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.OUTPUT_FILENAME = "eval_env"
 
     config.N_TARGETS = 0
+    # config.ROBOT_RADIUS = 0.3
 
     config.SCENARIOS_FOR_TRAINING = [
         {"env": "json_map_random", "agents": "local_exploration"},
