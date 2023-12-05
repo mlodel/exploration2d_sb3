@@ -61,7 +61,7 @@ class LogInfoCallback(BaseCallback):
             )
 
         # Log min/max of rewards and episode length if available
-        if len(self.model.ep_info_buffer) >= 0:
+        if len(self.model.ep_info_buffer) > 0:
             self.logger.record(
                 "rollout/ep_rew_min",
                 np.min([ep_info["r"] for ep_info in self.model.ep_info_buffer]),
