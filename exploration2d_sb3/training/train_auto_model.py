@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # Configs
     config = {
         "seed": 0,
-        "n_envs": 32,
+        "n_envs": 64,
         "n_eval_envs": 8,
         "total_steps": 10e6,  # used only if use_curriculum is False
         "eval_freq": 1e5,

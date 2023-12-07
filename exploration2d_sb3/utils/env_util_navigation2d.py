@@ -58,6 +58,7 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
 
     config.N_TARGETS = 0
     # config.ROBOT_RADIUS = 0.3
+    config.ADD_OBSTACLES = True
 
     config.SCENARIOS_FOR_TRAINING = [
         {"env": "json_map_random", "agents": "local_exploration"},
