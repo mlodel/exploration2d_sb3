@@ -45,6 +45,12 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     config.IG_REWARD_COVERAGE_FINISHED = 1.0
     config.REWARD_MAX_IG = 1.1
 
+    # Explored map only
+    config.TARGET_MAP_ACTIVE = False
+    config.IG_REWARD_MODE = "exploration"
+    config.EXPLORED_MAP_COVERAGE_TERMINATE = True
+    config.IG_COVERAGE_TERMINATE = False
+
     config.AUTO_RENDER = False
     config.RENDER_AFTER_POLICY = False
     config.RENDER_VIDEO = eval_video
@@ -75,9 +81,9 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
         # "explored_graph_json",
         # "ego_binary_map",
         "ego_explored_map",
-        "ego_entropy_map",
+        # "ego_entropy_map",
         "local_explored_map",
-        "local_entropy_map",
+        # "local_entropy_map",
         # "ego_global_map",
         # "ego_goal_map",
         # "global_map",
