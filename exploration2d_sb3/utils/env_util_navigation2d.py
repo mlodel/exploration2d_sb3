@@ -39,7 +39,8 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
     }
 
     config.IG_SENSE_RADIUS = 2.0
-    config.SUBMAP_LOOKAHEAD = 2.0  # config.IG_SENSE_RADIUS
+    config.SUBMAP_LOOKAHEAD = 3.0  # config.IG_SENSE_RADIUS
+    config.MAP_SIZE = (12, 12)
 
     config.IG_REWARD_COVERAGE_FINISHED = 1.0
     config.REWARD_MAX_IG = 1.1
@@ -74,12 +75,14 @@ def get_config(eval_env=False, save_path=None, eval_video=False):
         # "ego_binary_map",
         "ego_explored_map",
         "ego_entropy_map",
+        "local_explored_map",
+        "local_entropy_map",
         # "ego_global_map",
         # "ego_goal_map",
         # "global_map",
         # "pos_map",
         # "goal_map",
-        "local_grid",
+        # "local_grid",
         # "explored_graph_nodes",
         # "explored_graph_edges",
     ]

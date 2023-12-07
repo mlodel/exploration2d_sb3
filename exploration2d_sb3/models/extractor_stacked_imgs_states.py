@@ -40,6 +40,8 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
             "goal_map",
             "pos_map",
             "ego_entropy_map",
+            "local_explored_map",
+            "local_entropy_map",
         ]
         self.cfg_stacked_image_keys = [
             [
@@ -50,6 +52,11 @@ class StackedImgStateExtractor(BaseFeaturesExtractor):
                 "ego_entropy_map",
             ],
             # ["global_map", "goal_map", "pos_map", "binary_map", "explored_map"],
+            [
+                "local_grid",
+                "local_explored_map",
+                "local_entropy_map",
+            ],
         ]
 
         # State input settings

@@ -63,15 +63,19 @@ if __name__ == "__main__":
         "use_curriculum": False,
         "curriculum": [
             {
-                "total_timesteps": 4e6,
+                "total_timesteps": 3e6,
                 "level": 1,
             },
             {
-                "total_timesteps": 20e6,
+                "total_timesteps": 4e6,
                 "level": 2,
             },
+            {
+                "total_timesteps": 8e6,
+                "level": 3,
+            },
         ],
-        "map_level": 2,
+        "map_level": 0,
     }
 
     run_id = wandb.util.generate_id() if not args.resume else args.resume_run_id
